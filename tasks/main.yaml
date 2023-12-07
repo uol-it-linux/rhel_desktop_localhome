@@ -1,0 +1,30 @@
+---
+- name: Move local home
+  command: mv /home /localhome
+  args:
+    creates: /localhome
+
+- name: Set SELinux context for local home
+  ansible.builtin.selinux_fcontext:
+    target: "/localhome/home"
+    setype: "home_root_t"
+    state: "present"
+
+- name: Restore SELinux context for local home
+  command: restorecon -R /localhome/home
+
+- name: Create symlink for home
+  ansible.builtin.file:
+    src: "/localhome/home"
+    dest: "/home"
+    state: link
+
+- name: Create /localhome/data directory
+  ansible.builtin.file:
+    path: "/localhome/data"
+    state: directory
+
+- name: Set permissions for /localhome/data
+  ansible.builtin.file:
+    path: "/localhome/data"
+    mode: "1777"
