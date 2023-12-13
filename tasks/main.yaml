@@ -5,10 +5,8 @@
     creates: /localhome
 
 - name: Set SELinux context for local home
-  ansible.builtin.selinux_fcontext:
-    target: "/localhome/home"
-    setype: "home_root_t"
-    state: "present"
+  ansible.builtin.command:
+    cmd: "chcon -t home_root_t /localhome/home"
 
 - name: Restore SELinux context for local home
   command: restorecon -R /localhome/home
