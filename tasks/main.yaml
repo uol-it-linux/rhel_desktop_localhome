@@ -46,7 +46,19 @@
     src: "/localhome"
     dest: "/localhome/localhome_is_NOT_backed_up"
     state: link
-    
+
+- name: Create symlink for not backed up warning in /
+  ansible.builtin.file:   
+    src: "/localhome"
+    dest: "/localhome_is_NOT_backed_up"
+    state: link
+
+- name: Create symlink for home not backed up warning in /
+  ansible.builtin.file:   
+    src: "/localhome/home"
+    dest: "/home_in_localhome_is_NOT_backed_up"
+    state: link
+
 - name: Set permissions for /localhome/data
   ansible.builtin.file:
     path: "/localhome/data"
