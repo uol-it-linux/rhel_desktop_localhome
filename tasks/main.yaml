@@ -14,7 +14,7 @@
   when: localhome_home_stat.exists = True
 
 - name: Restore SELinux context for local home
-  command: restorecon -R /localhome/home
+  command: restorecon -R /localhome/home/*
   when: localhome_home_stat.exists = True
 
 - name: stat /home
