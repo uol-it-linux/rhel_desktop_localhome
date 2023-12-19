@@ -7,16 +7,16 @@
 - name: Trying to move with builtin
   ansible.builtin.command:
     cmd: "mv /home /localhome/"
-  when: localhome_home_stat.exists == False
+  when: localhome_home_stat is defined and localhome_home_stat == False
 
 - name: Set SELinux context for local home
   ansible.builtin.command:
     cmd: "chcon -t home_root_t /localhome/home"
-  when: localhome_home_stat.exists == True
+  when: localhome_home_stat is defined and localhome_home_stat == True
 
 - name: Restore SELinux context for local home
   command: restorecon -R /localhome/home/*
-  when: localhome_home_stat.exists == True
+  when: localhome_home_stat is defined and localhome_home_stat == True
 
 - name: stat /home
   ansible.builtin.stat: 
@@ -28,7 +28,7 @@
     src: "/localhome/home"
     dest: "/home"
     state: link  
-  when: home_stat.exists == False
+  when: home_stat is defined and home_stat == False
 
 - name: Create /localhome/data directory
   ansible.builtin.file:
