@@ -1,21 +1,32 @@
 ---
-- name: Move local home
-  command: mv /home /localhome
-  args:
-    creates: /localhome
+- name: stat /localhome/home
+  stat: /localhome/home
+  register: localhome_home_stat
+
+- name: Trying to move with builtin
+  ansible.builtin.command:
+    cmd: "mv /home /localhome/"
+  when: localhome_home_stat.exists = False
 
 - name: Set SELinux context for local home
   ansible.builtin.command:
     cmd: "chcon -t home_root_t /localhome/home"
+  when: localhome_home_stat.exists = True
 
 - name: Restore SELinux context for local home
   command: restorecon -R /localhome/home
+  when: localhome_home_stat.exists = True
+
+- name: stat /home
+  stat: /home
+  register: home_stat
 
 - name: Create symlink for home
-  ansible.builtin.file:
+  ansible.builtin.file:   
     src: "/localhome/home"
     dest: "/home"
-    state: link
+    state: link  
+  when: home_stat.exists = False
 
 - name: Create /localhome/data directory
   ansible.builtin.file:
