@@ -33,6 +33,18 @@
     path: "/localhome/data"
     state: directory
 
+- name: Create symlink for data
+  ansible.builtin.file:   
+    src: "/localhome/data"
+    dest: "/localhome/not-backed-up"
+    state: link
+
+- name: Create symlink for not backed up warning
+  ansible.builtin.file:   
+    src: "/localhome"
+    dest: "/localhome/localhome_is_NOT_backed_up"
+    state: link
+    
 - name: Set permissions for /localhome/data
   ansible.builtin.file:
     path: "/localhome/data"
