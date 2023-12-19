@@ -1,6 +1,7 @@
 ---
 - name: stat /localhome/home
-  stat: /localhome/home
+  ansible.builtin.stat: 
+    path: /localhome/home
   register: localhome_home_stat
 
 - name: Trying to move with builtin
@@ -18,7 +19,8 @@
   when: localhome_home_stat.exists = True
 
 - name: stat /home
-  stat: /home
+  ansible.builtin.stat: 
+    path: /home
   register: home_stat
 
 - name: Create symlink for home
