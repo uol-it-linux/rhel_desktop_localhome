@@ -1,34 +1,56 @@
 ---
-- name: stat /localhome/home
-  ansible.builtin.stat: 
-    path: /localhome/home
-  register: localhome_home_stat
+- name: stat /home
+  ansible.builtin.stat:
+    path: /home
+  register: home
 
-- name: Trying to move with builtin
+- name: Print home details for debug
+  debug:
+    msg:
+      - "home.stat : {{ home.stat }}"
+
+- name: Trying to move home in to localhome with builtin command
   ansible.builtin.command:
     cmd: "mv /home /localhome/"
-  when: localhome_home_stat is defined and localhome_home_stat == False
+#  command: mv /home /localhome/
+  when: home.stat is defined and home.stat.islnk == False
+
+- name: stat /localhome/home
+  ansible.builtin.stat:
+    path: /localhome/home
+  register: localhome_home
+
+- name: Print localhome_home details for debug
+  debug:
+    msg:
+      - "localhome_home.stat : {{ localhome_home.stat }}"
 
 - name: Set SELinux context for local home
   ansible.builtin.command:
     cmd: "chcon -t home_root_t /localhome/home"
-  when: localhome_home_stat is defined and localhome_home_stat == True
+#  command: chcon -t home_root_t /localhome/home
+#  when: localhome_home.stat is defined and localhome_home.stat == True
 
 - name: Restore SELinux context for local home
   command: restorecon -R /localhome/home/*
-  when: localhome_home_stat is defined and localhome_home_stat == True
+#  when: localhome_home.stat is defined and localhome_home.stat == True
 
 - name: stat /home
-  ansible.builtin.stat: 
+  ansible.builtin.stat:
     path: /home
-  register: home_stat
+  register: home
+
+- name: Print home.stat details for debug
+  debug:
+    msg:
+      - "home.stat : {{ home.stat }}"
 
 - name: Create symlink for home
-  ansible.builtin.file:   
+  ansible.builtin.file:
     src: "/localhome/home"
     dest: "/home"
-    state: link  
-  when: home_stat is defined and home_stat == False
+    state: link
+# when: home.stat is defined and home.stat == False
 
 - name: Create /localhome/data directory
   ansible.builtin.file:
@@ -36,25 +58,25 @@
     state: directory
 
 - name: Create symlink for data
-  ansible.builtin.file:   
+  ansible.builtin.file:
     src: "/localhome/data"
     dest: "/localhome/not-backed-up"
     state: link
 
 - name: Create symlink for not backed up warning
-  ansible.builtin.file:   
+  ansible.builtin.file:
     src: "/localhome"
     dest: "/localhome/localhome_is_NOT_backed_up"
     state: link
 
 - name: Create symlink for not backed up warning in /
-  ansible.builtin.file:   
+  ansible.builtin.file:
     src: "/localhome"
     dest: "/localhome_is_NOT_backed_up"
     state: link
 
 - name: Create symlink for home not backed up warning in /
-  ansible.builtin.file:   
+  ansible.builtin.file:
     src: "/localhome/home"
     dest: "/home_in_localhome_is_NOT_backed_up"
     state: link
