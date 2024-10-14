@@ -1,6 +1,6 @@
 ---
 - name: stat /home
-  ansible.builtin.stat:
+  ansible.builtin.stat: 
     path: /home
   register: home
 
@@ -13,7 +13,7 @@
   ansible.builtin.command:
     cmd: "mv /home /localhome/"
 #  command: mv /home /localhome/
-  when: home.stat is defined and home.stat.islnk == False
+  when: home.stat is defined and home.stat.islnk == False 
 
 - name: stat /localhome/home
   ansible.builtin.stat:
@@ -36,7 +36,7 @@
 #  when: localhome_home.stat is defined and localhome_home.stat == True
 
 - name: stat /home
-  ansible.builtin.stat:
+  ansible.builtin.stat: 
     path: /home
   register: home
 
@@ -46,10 +46,10 @@
       - "home.stat : {{ home.stat }}"
 
 - name: Create symlink for home
-  ansible.builtin.file:
+  ansible.builtin.file:   
     src: "/localhome/home"
     dest: "/home"
-    state: link
+    state: link  
 # when: home.stat is defined and home.stat == False
 
 - name: Create /localhome/data directory
@@ -57,26 +57,33 @@
     path: "/localhome/data"
     state: directory
 
+
+- name: stat /localhome/not-backed-up
+  ansible.builtin.stat:
+    path: /localhome/not-backed-up
+  register: nbu
+
 - name: Create symlink for data
-  ansible.builtin.file:
+  ansible.builtin.file:   
     src: "/localhome/data"
     dest: "/localhome/not-backed-up"
     state: link
+  when: nbu.stat is not defined or nbu.stat.islnk == True
 
 - name: Create symlink for not backed up warning
-  ansible.builtin.file:
+  ansible.builtin.file:   
     src: "/localhome"
     dest: "/localhome/localhome_is_NOT_backed_up"
     state: link
 
 - name: Create symlink for not backed up warning in /
-  ansible.builtin.file:
+  ansible.builtin.file:   
     src: "/localhome"
     dest: "/localhome_is_NOT_backed_up"
     state: link
 
 - name: Create symlink for home not backed up warning in /
-  ansible.builtin.file:
+  ansible.builtin.file:   
     src: "/localhome/home"
     dest: "/home_in_localhome_is_NOT_backed_up"
     state: link
