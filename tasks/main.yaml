@@ -29,11 +29,11 @@
   ansible.builtin.command:
     cmd: "chcon -t home_root_t /localhome/home"
 #  command: chcon -t home_root_t /localhome/home
-#  when: localhome_home.stat is defined and localhome_home.stat == True
+#  when: localhome_home.stat.exists == True and localhome_home.stat == True
 
 - name: Restore SELinux context for local home
   command: restorecon -R /localhome/home/*
-#  when: localhome_home.stat is defined and localhome_home.stat == True
+#  when: localhome_home.stat.exists == True and localhome_home.stat == True
 
 - name: stat /home
   ansible.builtin.stat: 
@@ -50,7 +50,7 @@
     src: "/localhome/home"
     dest: "/home"
     state: link  
-# when: home.stat is defined and home.stat == False
+# when: home.stat.exists == True and home.stat == False
 
 - name: Create /localhome/data directory
   ansible.builtin.file:
@@ -68,7 +68,7 @@
     src: "/localhome/data"
     dest: "/localhome/not-backed-up"
     state: link
-  when: nbu.stat is not defined or nbu.stat.islnk == True
+  when: nbu.stat.exists == False 
 
 - name: Create symlink for not backed up warning
   ansible.builtin.file:   
